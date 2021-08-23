@@ -1,13 +1,12 @@
 # %%
+import pstats
+import cProfile
+import re
+import time
+import numpy as np
 import os
 
 os.environ["NUMPY_EXPERIMENTAL_ARRAY_FUNCTION"] = "0"
-
-import numpy as np
-import time
-import re
-import cProfile
-import pstats
 
 
 def timeit(f):
@@ -17,7 +16,8 @@ def timeit(f):
         result = f(*args, **kw)
         te = time.time()
 
-        print("func:%r args:[%r, %r] took: %2.4f sec" % (f.__name__, args, kw, te - ts))
+        print("func:%r args:[%r, %r] took: %2.4f sec" %
+              (f.__name__, args, kw, te - ts))
         return result
 
     return timed
@@ -118,6 +118,7 @@ def solve_n_queens(n, fixed_queen):
     else:
         q = queens(n, fixed_queen)
         q.place_allqueens()
+        print(q.queens_positions)
         if q.solved:
             q.board2text()
             print(q.board)
@@ -129,7 +130,7 @@ def solve_n_queens(n, fixed_queen):
 if __name__ == "__main__":
 
     with cProfile.Profile() as pr:
-        solve_n_queens(500, (0, 0))
+        solve_n_queens(6, (0, 1))
 
     stats = pstats.Stats(pr)
     stats.sort_stats(pstats.SortKey.TIME)
