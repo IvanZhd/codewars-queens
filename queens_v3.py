@@ -25,7 +25,7 @@ class queens:
         self.fixed_position = fixed_position
         self.n = n
         self.attempt = 0
-        self.attempts_max = 10000
+        self.attempts_max = 100
         self.solved = False
         self.board = np.zeros((self.n, self.n))
         self.boardtext = ""
@@ -51,6 +51,20 @@ class queens:
             if col in cols:
                 cols.remove(col)
 
+    def validate(self, row, cols):
+
+        for col in cols:
+            # Get all combinations with previous positions
+            comb = list(itertools.combinations(
+                self.queens_positions + [(row, col)], 2))
+            # Check if is not on a diagonal with another queen
+            valid = not any(
+                list(map(lambda x: self.checkSameDiag(*x), comb)))
+            # If position is not valid, then repeat random choice, otherwise add this position to list
+            if valid:
+                self.queens_positions.append((row, col))
+                break
+
     def getBoard(self):
         # Convert array fo tuples into array
         a = np.array([*self.queens_positions])
@@ -69,34 +83,12 @@ class queens:
         else:
             return False
 
-    @timeit
-    def validate(self, row, cols):
-        # Keep track of temporary cols which were tried for the row
-        tmpcols = cols.copy()
-        # If there are still columns to fill
-        if len(tmpcols) > 0:
-            # Get random column
-            col = cols[np.random.choice(len(tmpcols))]
-            # Get all combinations with previous positions
-            comb = list(itertools.combinations(
-                self.queens_positions + [(row, col)], 2))
-            # Check if is not on a diagonal with another queen
-            valid = not any(
-                list(map(lambda x: self.checkSameDiag(*x), comb)))
-            # If position is not valid, then repeat random choice, otherwise add this position to list
-            if valid:
-                self.queens_positions.append((row, col))
-            else:
-                tmpcols.remove(col)
-                self.validate(row, tmpcols)
-
 
 if __name__ == "__main__":
 
-    q = queens(100, (0, 0))
+    q = queens(8, (0, 0))
 
     while q.attempt <= q.attempts_max:
-        print(q.attempt)
         q.place()
         if len(q.queens_positions) == q.n:
             break
